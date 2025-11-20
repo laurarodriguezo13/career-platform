@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESADE Career Intelligence Platform</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- AWS Cognito SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.6/dist/amazon-cognito-identity.min.js"></script>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>ESADE Career Intelligence Platform</h1>
+            <nav>
+                <button id="preferencesBtn" class="btn-secondary" style="display: none;">
+                    <i class="fas fa-cog"></i> Preferences
+                </button>
+                <button id="favoritesBtn" class="btn-secondary" style="display: none;">
+                    <i class="fas fa-heart"></i> Favorites
+                </button>
+                <button id="loginBtn" class="btn-primary">Sign In</button>
+                <button id="signupBtn" class="btn-secondary">Sign Up</button>
+                <div id="userInfo" style="display: none;">
+                    <span id="userEmail"></span>
+                    <button id="logoutBtn" class="btn-secondary">Sign Out</button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section id="welcomeSection">
+            <h2>Welcome to ESADE Career Intelligence</h2>
+            <p>Discover personalized career opportunities tailored to your skills and preferences.</p>
+            <p>Sign in with your ESADE email to get started.</p>
+        </section>
+
+        <section id="dashboardSection" style="display: none;">
+            <h2>Your Career Dashboard</h2>
+            
+            <!-- Statistics Cards -->
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalJobsStat">0</div>
+                    <div class="stat-label">Total Jobs Available</div>
+                </div>
+                <div class="stat-card secondary">
+                    <div class="stat-value" id="matchRateStat">0%</div>
+                    <div class="stat-label">Average Match Rate</div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-value" id="favoritesCount">0</div>
+                    <div class="stat-label">Saved Jobs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="citiesCount">6</div>
+                    <div class="stat-label">Cities Available</div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <!-- Filters Sidebar -->
+                <div class="filters-sidebar" id="filtersSidebar" style="display: none;">
+                    <h3 style="margin-bottom: 1.5rem; color: var(--primary-color);">Filters</h3>
+                    
+                    <div class="filter-group">
+                        <label><i class="fas fa-map-marker-alt"></i> Location</label>
+                        <div id="locationFilters"></div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label><i class="fas fa-briefcase"></i> Job Type</label>
+                        <div id="jobTypeFilters"></div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label><i class="fas fa-chart-line"></i> Match Score</label>
+                        <input type="range" id="matchScoreRange" min="0" max="100" value="0" style="width: 100%;">
+                        <div style="display: flex; justify-content: space-between; margin-top: 0.5rem; font-size: 0.85rem; color: var(--text-secondary);">
+                            <span>Any</span>
+                            <span id="matchScoreValue">0%+</span>
+                        </div>
+                    </div>
+                    
+                    <button class="btn-primary btn-block" onclick="applyFilters()">
+                        <i class="fas fa-filter"></i> Apply Filters
+                    </button>
+                    <button class="btn-outline btn-block" onclick="clearFilters()" style="margin-top: 0.5rem;">
+                        Clear All
+                    </button>
+                </div>
+
+                <!-- Main Content -->
+                <div style="flex: 1;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Recommended Jobs</h3>
+                            <div>
+                                <button class="btn-icon" onclick="toggleFilters()" title="Toggle Filters">
+                                    <i class="fas fa-filter"></i>
+                                </button>
+                                <button class="btn-icon" onclick="refreshJobs()" title="Refresh">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="recommendedJobs">
+                            <div class="skeleton" style="height: 200px; margin-bottom: 1rem;"></div>
+                            <div class="skeleton" style="height: 200px;"></div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Trending Skills</h3>
+                        </div>
+                        <div id="trendingSkills">
+                            <div class="skeleton" style="height: 100px;"></div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Search Jobs</h3>
+                        </div>
+                        <div class="search-container">
+                            <input type="text" id="searchInput" placeholder="Search by title, company, location, or skills...">
+                            <button id="searchBtn" class="btn-primary">
+                                <i class="fas fa-search"></i> Search
+                            </button>
+                        </div>
+                        <div id="searchResults"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Authentication Modal -->
+    <div id="authModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeModal">&times;</span>
+            <h2 id="authTitle">Sign In</h2>
+            
+            <div id="authMessage"></div>
+            
+            <form id="authFormElement">
+                <input type="hidden" id="authMode" value="signin">
+                
+                <div class="form-group">
+                    <label for="emailInput">ESADE Email</label>
+                    <input type="email" id="emailInput" placeholder="your.name@esade.edu" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="passwordInput">Password</label>
+                    <input type="password" id="passwordInput" placeholder="Min. 8 characters" required>
+                    <small style="color: #666;">Must include uppercase, lowercase, number, and special character</small>
+                </div>
+                
+                <button type="submit" class="btn-primary btn-block">Continue</button>
+            </form>
+            
+            <div id="verificationSection" style="display: none;">
+                <p>A verification code has been sent to <strong id="verifyEmail"></strong></p>
+                <p>Please check your email and enter the 6-digit code:</p>
+                <div class="form-group">
+                    <input type="text" id="verificationCode" placeholder="000000" maxlength="6" required>
+                </div>
+                <button id="verifyBtn" class="btn-primary btn-block">Verify Email</button>
+                <button id="resendCode" class="btn-text">Resend Code</button>
+            </div>
+            
+            <p class="switch-mode">
+                <button id="switchMode" class="btn-text">
+                    <span class="switch-signin">Don't have an account? Sign up</span>
+                    <span class="switch-signup" style="display: none;">Already have an account? Sign in</span>
+                </button>
+            </p>
+        </div>
+    </div>
+
+    <!-- Job Detail Modal -->
+    <div id="jobDetailModal" class="modal">
+        <div class="modal-content job-detail-modal">
+            <span class="close" onclick="closeJobDetail()">&times;</span>
+            <div id="jobDetailContent"></div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer"></div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 ESADE Career Intelligence Platform | Powered by AWS</p>
+            <p style="margin-top: 0.5rem; font-size: 0.9rem; opacity: 0.8;">
+                <i class="fas fa-shield-alt"></i> Secure | 
+                <i class="fas fa-cloud"></i> Serverless | 
+                <i class="fas fa-globe"></i> Global
+            </p>
+        </div>
+    </footer>
+
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

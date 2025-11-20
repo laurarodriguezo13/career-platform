@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS Architecture Diagrams – ESADE Career Intelligence Platform</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: auto;
+            background: white;
+            padding: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #003366;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 40px;
+        }
+
+        .diagram-title {
+            color: #003366;
+            font-size: 18px;
+            font-weight: 700;
+            margin: 40px 0 10px 0;
+            text-align: left;
+        }
+
+        svg {
+            width: 100%;
+            height: auto;
+            display: block;
+            margin-bottom: 30px;
+        }
+
+        @media print {
+            body { padding: 0; }
+            .container { padding: 20px; }
+            .diagram-title { page-break-before: always; }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+<h1>ESADE Career Intelligence Platform – AWS Architecture</h1>
+
+
+<!-- ========================================================= -->
+<!-- 1. SIGN UP & SIGN IN PROCESS -->
+<!-- ========================================================= -->
+
+<div class="diagram-title"> Sign Up & Sign In Process</div>
+<svg viewBox="0 0 1600 240">
+
+    <defs>
+        <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="4" orient="auto">
+            <polygon points="0 0, 12 4, 0 8" fill="#666"/>
+        </marker>
+    </defs>
+
+    <!-- TOP ROW (Large Spacing) -->
+    <rect x="20" y="40" width="180" height="60" stroke="#003366" fill="white" rx="6" stroke-width="2"/>
+    <text x="110" y="75" text-anchor="middle" font-size="14" fill="#003366">User Browser</text>
+
+    <line x1="200" y1="70" x2="380" y2="70" stroke="#666" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="290" y="55" text-anchor="middle" font-size="11" fill="#666">HTTPS Request</text>
+
+    <rect x="380" y="40" width="200" height="60" stroke="#003366" fill="white" rx="6" stroke-width="2"/>
+    <text x="480" y="75" text-anchor="middle" font-size="14" fill="#003366">S3 Website</text>
+
+    <line x1="580" y1="70" x2="780" y2="70" stroke="#666" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="680" y="55" text-anchor="middle" font-size="11" fill="#666">SDK Call</text>
+
+    <rect x="780" y="40" width="180" height="60" stroke="#003366" fill="white" rx="6" stroke-width="2"/>
+    <text x="870" y="75" text-anchor="middle" font-size="14" fill="#003366">Cognito</text>
+
+    <line x1="960" y1="70" x2="1200" y2="70" stroke="#666" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="1080" y="55" text-anchor="middle" font-size="11" fill="#666">Trigger</text>
+
+    <rect x="1200" y="40" width="260" height="60" stroke="#003366" fill="white" rx="6" stroke-width="2"/>
+    <text x="1330" y="75" text-anchor="middle" font-size="14" fill="#003366">Pre-Signup Lambda</text>
+
+    <!-- BOTTOM ROW -->
+    <rect x="20" y="140" width="230" height="60" stroke="#003366" fill="white" rx="6" stroke-width="2"/>
+    <text x="135" y="175" text-anchor="middle" font-size="14" fill="#003366">Pre-Signup Lambda</text>
+
+    <line x1="250" y1="170" x2="440" y2="170" stroke="#666" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="345" y="155" text-anchor="middle" font-size="11" fill="#666">Validates</text>
+
+    <rect x="440" y="140" width="180" height="60" stroke="#003366" fill="white" rx="6" stroke-width="2"/>
+    <text x="530" y="175" text-anchor="middle" font-size="14" fill="#003366">Cognito</text>
+
+    <line x1="620" y1="170" x2="860" y2="170" stroke="#666" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="740" y="155" text-anchor="middle" font-size="11" fill="#666">Sends Email</text>
+
+    <rect x="860" y="140" width="220" height="60" stroke="#003366" fill="white" rx="6" stroke-width="2"/>
+    <text x="970" y="175" text-anchor="middle" font-size="14" fill="#003366">User Email</text>
+
+</svg>
+
+
+
+<!-- ========================================================= -->
+<!-- 2. FETCHING JOBS FROM ADZUNA API -->
+<!-- ========================================================= -->
+
+<div class="diagram-title"> Fetching Jobs from Adzuna API</div>
+<svg viewBox="0 0 1600 420">
+
+    <defs>
+        <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="4" orient="auto">
+            <polygon points="0 0, 12 4, 0 8" fill="#666"/>
+        </marker>
+    </defs>
+
+    <!-- Row 1 -->
+    <rect x="20" y="20" width="250" height="60" fill="white" stroke="#003366" stroke-width="2" rx="6"/>
+    <text x="145" y="57" text-anchor="middle" font-size="14">Job Ingestion Lambda</text>
+
+    <line x1="270" y1="50" x2="520" y2="50" stroke="#666" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="395" y="35" font-size="11" text-anchor="middle">Get Secret</text>
+
+    <rect x="520" y="20" width="260" height="60" fill="white" stroke="#003366" stroke-width="2" rx="6"/>
+    <text x="650" y="57" text-anchor="middle" font-size="14">Secrets Manager</text>
+
+    <!-- Row 2 -->
+    <rect x="20" y="120" width="250" height="60" fill="white" stroke="#003366" stroke-width="2" rx="6"/>
+    <text x="145" y="157" text-anchor="middle" font-size="14">Job Ingestion Lambda</text>
+
+    <line x1="270" y1="150" x2="520" y2="150" stroke="#666" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="395" y="135" font-size="11" text-anchor="middle">API Call</text>
+
+    <rect x="520" y="120" width="200" height="60" fill="white" stroke="#003366" rx="6" stroke-width="2"/>
+    <text x="620" y="157" text-anchor="middle" font-size="14">Adzuna API</text>
+
+    <line x1="720" y1="150" x2="960" y2="150" stroke="#666" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="840" y="135" font-size="11" text-anchor="middle">Jobs JSON</text>
+
+    <rect x="960" y="120" width="260" height="60" fill="white" stroke="#003366" rx="6" stroke-width="2"/>
+    <text x="1090" y="157" text-anchor="middle" font-size="14">Job Ingestion Lambda</text>
+
+    <!-- Row 3 -->
+    <rect x="20" y="220" width="250" height="60" fill="white" stroke="#003366" stroke-width="2" rx="6"/>
+    <text x="145" y="257" text-anchor="middle" font-size="14">Job Ingestion Lambda</text>
+
+    <line x1="270" y1="250" x2="520" y2="250" stroke="#666" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="395" y="235" font-size="11" text-anchor="middle">PutItem</text>
+
+    <rect x="520" y="220" width="240" height="60" fill="white" stroke="#003366" stroke-width="2" rx="6"/>
+    <text x="640" y="257" text-anchor="middle" font-size="14">jobs-live Table</text>
+
+    <!-- Row 4 -->
+    <rect x="20" y="320" width="250" height="60" fill="white" stroke="#003366" stroke-width="2" rx="6"/>
+    <text x="145" y="357" text-anchor="middle" font-size="14">Job Ingestion Lambda</text>
+
+    <line x1="270" y1="350" x2="520" y2="350" stroke="#666" stroke-width="2" marker-end="url(#arrow)"/>
+    <text x="395" y="335" font-size="11" text-anchor="middle">UpdateItem</text>
+
+    <rect x="520" y="320" width="260" height="60" fill="white" stroke="#003366" stroke-width="2" rx="6"/>
+    <text x="650" y="357" text-anchor="middle" font-size="14">skill-trends Table</text>
+
+</svg>
+
+
+
+<!-- ========================================================= -->
+<!-- 3. AI-POWERED SKILL EXTRACTION -->
+<!-- ========================================================= -->
+
+<div class="diagram-title"> AI-Powered Skill Extraction</div>
+<svg viewBox="0 0 1600 260">
+
+    <defs>
+        <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="4" orient="auto">
+            <polygon points="0 0, 12 4, 0 8" fill="#666"/>
+        </marker>
+    </defs>
+
+    <!-- Row 1 -->
+    <rect x="20" y="20" width="240" height="60" fill="white" stroke="#003366" stroke-width="2" rx="6"/>
+    <text x="140" y="57" text-anchor="middle" font-size="14">jobs-live Table</text>
+
+    <line x1="260" y1="50" x2="540" y2="50" stroke="#666" marker-end="url(#arrow)" stroke-width="2"/>
+    <text x="395" y="35" text-anchor="middle" font-size="11">Scan</text>
+
+    <rect x="540" y="20" width="230" height="60" fill="white" stroke="#003366" stroke-width="2" rx="6"/>
+    <text x="655" y="57" text-anchor="middle" font-size="14">NLP Lambda</text>
+
+    <line x1="770" y1="50" x2="1100" y2="50" stroke="#666" marker-end="url(#arrow)" stroke-width="2"/>
+    <text x="935" y="35" text-anchor="middle" font-size="11">Analyze</text>
+
+    <rect x="1100" y="20" width="260" height="60" fill="white" stroke="#003366" stroke-width="2" rx="6"/>
+    <text x="1230" y="57" text-anchor="middle" font-size="14">Amazon Comprehend</text>
+
+    <!-- Row 2 -->
+    <rect x="20" y="140" width="260" height="60" fill="white" stroke="#003366" stroke-width="2" rx="6"/>
+    <text x="150" y="177" text-anchor="middle" font-size="14">Amazon Comprehend</text>
+
+    <line x1="280" y1="170" x2="560" y2="170" stroke="#666" marker-end="url(#arrow)" stroke-width="2"/>
+    <text x="420" y="155" text-anchor="middle" font-size="11">Key Phrases</text>
+
+    <rect x="560" y="140" width="240" height="60" fill="white" stroke="#003366" stroke-width="2" rx="6"/>
+    <text x="680" y="177" text-anchor="middle" font-size="14">NLP Lambda</text>
+
+    <line x1="800" y1="170" x2="1100" y2="170" stroke="#666" marker-end="url(#arrow)" stroke-width="2"/>
+    <text x="950" y="155" text-anchor="middle" font-size="11">Update</text>
+
+    <rect x="1100" y="140" width="240" height="60" fill="white" stroke="#003366" stroke-width="2" rx="6"/>
+    <text x="1220" y="177" text-anchor="middle" font-size="14">skill-trends Table</text>
+
+</svg>
+
+
+
+<!-- ========================================================= -->
+<!-- 4. PERSONALIZED JOB MATCHING -->
+<!-- ========================================================= -->
+
+<div class="diagram-title"> Personalized Job Matching</div>
+<svg viewBox="0 0 1600 260">
+
+    <defs>
+        <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="4" orient="auto">
+            <polygon points="0 0, 12 4, 0 8" fill="#666"/>
+        </marker>
+    </defs>
+
+    <!-- Row 1 -->
+    <rect x="20" y="20" width="260" height="60" fill="white" stroke="#003366" stroke-width="2" rx="6"/>
+    <text x="150" y="57" font-size="14" text-anchor="middle">user-profiles Table</text>
+
+    <line x1="280" y1="50" x2="560" y2="50" marker-end="url(#arrow)" stroke="#666" stroke-width="2"/>
+    <text x="420" y="35" text-anchor="middle" font-size="11">GetItem</text>
+
+    <rect x="560" y="20" width="300" height="60" fill="white" stroke="#003366" stroke-width="2" rx="6"/>
+    <text x="710" y="57" font-size="14" text-anchor="middle">Recommendations Lambda</text>
+
+    <line x1="860" y1="50" x2="1150" y2="50" marker-end="url(#arrow)" stroke="#666" stroke-width="2"/>
+    <text x="1000" y="35" text-anchor="middle" font-size="11">Query</text>
+
+    <rect x="1150" y="20" width="260" height="60" fill="white" stroke="#003366" stroke-width="2" rx="6"/>
+    <text x="1280" y="57" font-size="14" text-anchor="middle">jobs-live Table</text>
+
+    <!-- Row 2 -->
+    <rect x="20" y="140" width="300" height="60" fill="white" stroke="#003366" stroke-width="2" rx="6"/>
+    <text x="170" y="177" font-size="14" text-anchor="middle">Recommendations Lambda</text>
+
+    <line x1="320" y1="170" x2="630" y2="170" marker-end="url(#arrow)" stroke="#666" stroke-width="2"/>
+    <text x="475" y="155" font-size="11" text-anchor="middle">Calculate Match Score</text>
+
+    <rect x="630" y="140" width="300" height="60" fill="white" stroke="#003366" stroke-width="2" rx="6"/>
+    <text x="780" y="177" font-size="14" text-anchor="middle">Recommendations Lambda</text>
+
+    <line x1="930" y1="170" x2="1220" y2="170" marker-end="url(#arrow)" stroke="#666" stroke-width="2"/>
+    <text x="1075" y="155" font-size="11" text-anchor="middle">PutItem</text>
+
+    <rect x="1220" y="140" width="300" height="60" fill="white" stroke="#003366" stroke-width="2" rx="6"/>
+    <text x="1370" y="177" font-size="14" text-anchor="middle">recommendations Table</text>
+
+</svg>
+
+
+
+<!-- ========================================================= -->
+<!-- 5. DATA FLOW (NO SVG) -->
+<!-- ========================================================= -->
+
+<div class="diagram-title"> Data Flow Summary</div>
+
+<p style="background:#f0f4f8; padding:20px; border-left:5px solid #003366; font-size:14px;">
+<b>1.</b> User signs up → Cognito validates email → Pre-signup Lambda enforces @esade.edu rule → Verification email sent.<br><br>
+<b>2.</b> Job Ingestion Lambda calls Adzuna API → Stores jobs in DynamoDB (jobs-live).<br><br>
+<b>3.</b> NLP Lambda extracts skills using Amazon Comprehend → Updates skill-trends table.<br><br>
+<b>4.</b> Recommendations Lambda computes match scores → Writes top recommendations to DynamoDB.<br><br>
+<b>5.</b> Web dashboard (S3 static website) loads recommendations → Displays personalized job results.
+</p>
+
+</div>
+</body>
+</html>
