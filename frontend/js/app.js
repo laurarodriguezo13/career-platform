@@ -19,12 +19,22 @@ document.addEventListener('DOMContentLoaded', function() {
 function setupEventListeners() {
     const searchBtn = document.getElementById('searchBtn');
     const searchInput = document.getElementById('searchInput');
+    const headerSearchBtn = document.getElementById('headerSearchBtn');
+    const headerSearchInput = document.getElementById('headerSearchInput');
     const matchScoreRange = document.getElementById('matchScoreRange');
     
     if (searchBtn && searchInput) {
         searchBtn.addEventListener('click', performSearch);
         searchInput.addEventListener('keypress', e => { 
             if (e.key === 'Enter') performSearch(); 
+        });
+    }
+    
+    // Header search
+    if (headerSearchBtn && headerSearchInput) {
+        headerSearchBtn.addEventListener('click', () => performHeaderSearch());
+        headerSearchInput.addEventListener('keypress', e => { 
+            if (e.key === 'Enter') performHeaderSearch(); 
         });
     }
     
@@ -38,6 +48,51 @@ function setupEventListeners() {
     const favoritesBtn = document.getElementById('favoritesBtn');
     if (favoritesBtn) {
         favoritesBtn.addEventListener('click', showFavorites);
+    }
+}
+
+function performHeaderSearch() {
+    const input = document.getElementById('headerSearchInput');
+    const searchCard = document.getElementById('searchCard');
+    const results = document.getElementById('searchResults');
+    
+    if (!input || !results) return;
+    
+    const term = input.value.toLowerCase().trim();
+    if (!term) {
+        if (searchCard) searchCard.style.display = 'none';
+        return;
+    }
+    
+    // Show search card
+    if (searchCard) searchCard.style.display = 'block';
+    
+    // Scroll to search results
+    searchCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    
+    const filtered = allJobs.filter(j => 
+        (j.title || '').toLowerCase().includes(term) || 
+        (j.company || '').toLowerCase().includes(term) || 
+        (j.location || '').toLowerCase().includes(term) ||
+        (j.description || '').toLowerCase().includes(term) ||
+        (j.skills || []).some(s => s.toLowerCase().includes(term))
+    );
+    
+    if (!filtered.length) {
+        results.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">🔍</div>
+                <h3>No results found</h3>
+                <p>No jobs match "${escapeHtml(term)}". Try different keywords.</p>
+            </div>
+        `;
+    } else {
+        results.innerHTML = `
+            <h4 style="margin: 1rem 0; color: var(--primary-color);">
+                <i class="fas fa-search"></i> Found ${filtered.length} job(s) for "${escapeHtml(term)}"
+            </h4>
+        `;
+        displayJobs(filtered, results);
     }
 }
 
@@ -71,7 +126,12 @@ async function loadRecommendations() {
         allJobs = allData.success ? allData.jobs : [];
         
         updateStatistics();
-        applyCurrentFilters();
+        
+        // Display jobs after a short delay to ensure allJobs is populated
+        setTimeout(() => {
+            applyCurrentFilters();
+            loadTrendingSkills();
+        }, 200);
         
     } catch (e) {
         console.error('API Error:', e);
@@ -450,11 +510,28 @@ function loadTrendingSkills() {
     const container = document.getElementById('trendingSkills');
     if (!container) return;
     
+    // Combine all jobs for skill counting
+    const allJobsCombined = [...allJobs, ...filteredJobs];
+    
+    if (allJobsCombined.length === 0) {
+        // Show default skills if no jobs loaded yet
+        const defaultSkills = ['Machine Learning', 'Python', 'Data Analysis', 'Communication', 'Agile', 'Excel', 'SQL', 'AWS'];
+        container.innerHTML = defaultSkills.map(s => 
+            `<span class="skill-tag" onclick="filterBySkill('${s}')">${escapeHtml(s)}</span>`
+        ).join('');
+        return;
+    }
+    
     const skillCounts = {};
-    allJobs.forEach(job => {
-        (job.skills || []).forEach(skill => {
-            skillCounts[skill] = (skillCounts[skill] || 0) + 1;
-        });
+    allJobsCombined.forEach(job => {
+        const skills = job.skills || [];
+        if (Array.isArray(skills)) {
+            skills.forEach(skill => {
+                if (skill && typeof skill === 'string') {
+                    skillCounts[skill] = (skillCounts[skill] || 0) + 1;
+                }
+            });
+        }
     });
     
     const topSkills = Object.entries(skillCounts)
@@ -462,8 +539,13 @@ function loadTrendingSkills() {
         .slice(0, 10)
         .map(([skill]) => skill);
     
+    // Fallback to default if no skills found
     if (topSkills.length === 0) {
-        topSkills.push('Machine Learning', 'Python', 'Data Analysis', 'Communication', 'Agile', 'Excel', 'SQL', 'AWS');
+        const defaultSkills = ['Machine Learning', 'Python', 'Data Analysis', 'Communication', 'Agile', 'Excel', 'SQL', 'AWS'];
+        container.innerHTML = defaultSkills.map(s => 
+            `<span class="skill-tag" onclick="filterBySkill('${s}')">${escapeHtml(s)}</span>`
+        ).join('');
+        return;
     }
     
     container.innerHTML = topSkills.map(s => 

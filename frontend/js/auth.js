@@ -48,8 +48,10 @@ function showWelcome() {
     document.getElementById('userInfo').style.display = 'none';
     const prefsBtn = document.getElementById('preferencesBtn');
     const favsBtn = document.getElementById('favoritesBtn');
+    const headerSearch = document.getElementById('headerSearch');
     if (prefsBtn) prefsBtn.style.display = 'none';
     if (favsBtn) favsBtn.style.display = 'none';
+    if (headerSearch) headerSearch.style.display = 'none';
 }
 
 function showDashboard() {
@@ -61,8 +63,10 @@ function showDashboard() {
     document.getElementById('userInfo').style.display = 'flex';
     const prefsBtn = document.getElementById('preferencesBtn');
     const favsBtn = document.getElementById('favoritesBtn');
+    const headerSearch = document.getElementById('headerSearch');
     if (prefsBtn) prefsBtn.style.display = 'inline-flex';
     if (favsBtn) favsBtn.style.display = 'inline-flex';
+    if (headerSearch) headerSearch.style.display = 'flex';
     
     if (currentUser && currentUser.email) {
         document.getElementById('userEmail').textContent = currentUser.email;
