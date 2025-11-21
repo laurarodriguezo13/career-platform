@@ -147,6 +147,22 @@ async function handleSignUp(email, password) {
             }
 
             cognitoUser = result.user;
+            
+            // Check if user is auto-confirmed (demo mode - no verification needed)
+            if (result.userConfirmed) {
+                console.log('User auto-confirmed - no verification needed');
+                document.getElementById('authMessage').innerHTML = 
+                    '<div class="success-message">✅ Account created successfully! You can now sign in.</div>';
+                
+                setTimeout(() => {
+                    showAuthModal('signin');
+                    document.getElementById('authMessage').innerHTML = 
+                        '<div class="success-message">✅ Account created! Please sign in.</div>';
+                }, 1500);
+                
+                resolve(result);
+                return;
+            }
             console.log('Sign up successful, user:', cognitoUser);
             console.log('Code delivery details:', result.codeDeliveryDetails);
             
