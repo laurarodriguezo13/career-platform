@@ -32,3 +32,11 @@ Thumbs.db
 *.swp
 *.swo
 *~
+
+# AWS CLI Installer
+AWSCLIV2.pkg
+*.pkg
+
+# Documentation temporary files (if any)
+docs/temp/
+docs/*.tmp

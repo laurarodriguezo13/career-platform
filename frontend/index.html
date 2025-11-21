@@ -161,10 +161,58 @@
                     <label for="passwordInput">Password</label>
                     <input type="password" id="passwordInput" placeholder="Min. 8 characters" required>
                     <small style="color: #666;">Must include uppercase, lowercase, number, and special character</small>
+                    <div style="text-align: right; margin-top: 0.5rem;">
+                        <button type="button" id="forgotPasswordBtn" class="btn-text" onclick="showForgotPassword()" style="display: none;">
+                            <i class="fas fa-key"></i> Forgot Password?
+                        </button>
+                    </div>
                 </div>
                 
                 <button type="submit" class="btn-primary btn-block">Continue</button>
             </form>
+            
+            <div id="forgotPasswordSection" style="display: none;">
+                <h3 style="margin-bottom: 1rem; color: var(--primary-color);">Reset Password</h3>
+                <p>Enter your ESADE email address and we'll send you a code to reset your password.</p>
+                <div class="form-group">
+                    <label for="forgotPasswordEmail">ESADE Email</label>
+                    <input type="email" id="forgotPasswordEmail" placeholder="your.name@esade.edu" required>
+                </div>
+                <button id="sendResetCodeBtn" class="btn-primary btn-block" onclick="handleForgotPassword()">
+                    <i class="fas fa-paper-plane"></i> Send Reset Code
+                </button>
+                <button class="btn-text btn-block" onclick="showSignIn()" style="margin-top: 1rem;">
+                    <i class="fas fa-arrow-left"></i> Back to Sign In
+                </button>
+            </div>
+            
+            <div id="resetPasswordSection" style="display: none;">
+                <h3 style="margin-bottom: 1rem; color: var(--primary-color);">Enter Reset Code</h3>
+                <p>A password reset code has been sent to <strong id="resetEmailDisplay"></strong></p>
+                <div class="form-group">
+                    <label for="resetCode">Verification Code</label>
+                    <input type="text" id="resetCode" placeholder="000000" maxlength="6" required 
+                           onkeypress="if(event.key==='Enter') document.getElementById('confirmResetBtn').click()">
+                </div>
+                <div class="form-group">
+                    <label for="newPassword">New Password</label>
+                    <input type="password" id="newPassword" placeholder="Min. 8 characters" required>
+                    <small style="color: #666;">Must include uppercase, lowercase, number, and special character</small>
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm New Password</label>
+                    <input type="password" id="confirmPassword" placeholder="Re-enter password" required>
+                </div>
+                <button id="confirmResetBtn" class="btn-primary btn-block" onclick="handlePasswordReset()">
+                    <i class="fas fa-check"></i> Reset Password
+                </button>
+                <button id="resendResetCodeBtn" class="btn-text btn-block" onclick="resendResetCode()" style="margin-top: 1rem;">
+                    <i class="fas fa-redo"></i> Resend Code
+                </button>
+                <button class="btn-text btn-block" onclick="showSignIn()" style="margin-top: 0.5rem;">
+                    <i class="fas fa-arrow-left"></i> Back to Sign In
+                </button>
+            </div>
             
             <div id="verificationSection" style="display: none;">
                 <p>A verification code has been sent to <strong id="verifyEmail"></strong></p>

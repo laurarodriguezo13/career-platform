@@ -2,7 +2,7 @@ resource "aws_cognito_user_pool" "main" {
   name = "${var.project_name}-${var.environment}-user-pool"
 
   username_attributes      = ["email"]
-  auto_verified_attributes = ["email"]
+  # Removed auto_verified_attributes to allow manual email verification with codes
 
   password_policy {
     minimum_length    = 8
